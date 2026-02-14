@@ -39,16 +39,11 @@ def main():
     print("Starting automated boot process...")
     utils.kill_existing_qemu()
     
-    # In a refactored environment, we might want to pass the port as argument
-    # Defaulting to standard lab port
-    ssh_port = config.DEFAULT_SSH_PORT
+    # Construct base command and add serial redirection for automation
+    cmd_list = utils.get_qemu_base_command(amd_mode=False)
+    cmd_list.extend(["-serial", "mon:stdio"])
     
-    # The command should ideally use the same parameters as qemu_setup.py
-    # but for automation we just need the HDA path and ports.
-    cmd = (f"qemu-system-x86_64 -m {config.DEFAULT_MEMORY} -smp {config.DEFAULT_CPU_CORES} "
-           f"-enable-kvm -cpu host -hda {config.IMAGE_PATH} "
-           f"-netdev user,id=net0,hostfwd=tcp::{ssh_port}-:22 -device e1000,netdev=net0 "
-           f"-nographic -serial mon:stdio")
+    cmd = " ".join(cmd_list)
     
     print(f"Executing: {cmd}")
     child = pexpect.spawn(cmd, encoding='utf-8')

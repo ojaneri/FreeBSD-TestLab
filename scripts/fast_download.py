@@ -33,20 +33,46 @@ import sys
 import urllib.request
 import shutil
 import subprocess
+from tqdm import tqdm
 import config
 import utils
 
 def download_file(url, dest):
+    """
+    Downloads a file from the specified URL with a progress bar.
+
+    Args:
+        url (str): The URL to download the file from.
+        dest (str): The local destination path to save the file.
+    """
     print(f"[+] Downloading: {url}")
     try:
-        with urllib.request.urlopen(url) as response, open(dest, 'wb') as out_file:
-            shutil.copyfileobj(response, out_file)
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            total_size = int(response.info().get('Content-Length', 0))
+            block_size = 1024 * 8  # 8 KiB
+            
+            with open(dest, 'wb') as out_file:
+                with tqdm(total=total_size, unit='iB', unit_scale=True, desc="FreeBSD Image") as pbar:
+                    while True:
+                        buffer = response.read(block_size)
+                        if not buffer:
+                            break
+                        out_file.write(buffer)
+                        pbar.update(len(buffer))
         print("[+] Download complete.")
     except Exception as e:
         print(f"[-] Error downloading: {e}")
         sys.exit(1)
 
 def extract_file(archive, output):
+    """
+    Extracts an XZ archive using the system 'xz' utility.
+
+    Args:
+        archive (str): Path to the .xz archive.
+        output (str): Destination path for the extracted file.
+    """
     print(f"[+] Extracting {archive} to {output}...")
     try:
         # Construct path to 'xz' if needed, but assuming it's in PATH

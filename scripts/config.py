@@ -28,9 +28,10 @@
 # Last Modified: 2026-02-14
 #
 
-"""
-Centralized configuration for the FreeBSD lab project.
-This module defines all paths, ports, and hardware specifications used by the lab scripts.
+"""Centralized configuration for the FreeBSD lab project.
+
+This module defines all paths, ports, and hardware specifications used by the 
+lab scripts.
 """
 
 import os

@@ -42,30 +42,10 @@ def run_qemu(amd_mode=False):
     if not utils.check_image_exists():
         sys.exit(1)
 
-    # Base configuration
-    memory = config.AMD_MEMORY if amd_mode else config.DEFAULT_MEMORY
-    cores = config.AMD_CPU_CORES if amd_mode else config.DEFAULT_CPU_CORES
-    ssh_port = config.AMD_SSH_PORT if amd_mode else config.DEFAULT_SSH_PORT
-    gdb_port = config.AMD_GDB_PORT if amd_mode else config.DEFAULT_GDB_PORT
-    cpu_model = config.AMD_CPU_MODEL if amd_mode else "host"
-
-    print(f"[+] Launching FreeBSD Lab {'(AMD Zen Mode)' if amd_mode else ''}")
-    print(f"[+] Resources: {cores} Cores, {memory} RAM")
-    print(f"[+] Connectivity: SSH:{ssh_port}, GDB:{gdb_port}")
-
-    cmd = [
-        "qemu-system-x86_64",
-        "-m", memory,
-        "-smp", cores,
-        "-cpu", cpu_model,
-        "-enable-kvm",
-        "-hda", config.IMAGE_PATH,
-        "-netdev", f"user,id=net0,hostfwd=tcp::{ssh_port}-:22",
-        "-device", "e1000,netdev=net0",
-        "-nographic",
-        "-s", "-S",
-        "-serial", "mon:stdio"
-    ]
+    cmd = utils.get_qemu_base_command(amd_mode)
+    
+    # Add debug/GDB flags
+    cmd.extend(["-s", "-S", "-serial", "mon:stdio"])
 
     print("--- Launching QEMU ---")
     try:

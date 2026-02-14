@@ -56,13 +56,13 @@ int main(int argc, char **argv) {
     if (argc > 1) event = argv[1];
 
     if (pmc_init() < 0)
-        err(1, "pmc_init failed (check if hwpmc.ko is loaded)");
+        err(1, "[ERROR] pmc_init failed: Ensure hwpmc(4) is loaded via 'kldload hwpmc'");
 
-    printf("[INFO] Monitoring hardware event: %s\n", event);
+    printf("[INFO] Configuring hardware event monitoring for: %s\n", event);
 
-    /* Allocate counter in Thread-private Counting mode */
+    /* Allocate counter in Thread-private Counting mode (TC) */
     if (pmc_allocate(event, PMC_MODE_TC, 0, PMC_CPU_ANY, &pmcid) < 0)
-        err(1, "pmc_allocate failed");
+        err(1, "[ERROR] pmc_allocate failed: check if the event is supported by the hardware");
 
     if (pmc_start(pmcid) < 0)
         err(1, "pmc_start failed");

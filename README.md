@@ -28,66 +28,68 @@ Date Created: 2026-02-13
 Last Modified: 2026-02-13
 -->
 
-# FreeBSD Engineering Lab & Research
+# FreeBSD Engineering Lab & Research (Enterprise Edition)
 
-This laboratory was established for kernel development, low-level debugging, and system research on FreeBSD 15.
+This laboratory is established for kernel development, low-level debugging, and system research on **FreeBSD 14.3-RELEASE x64**.
 
-### 1. Project Specifications & Goals (`docs/SPECIFICATION.md`)
+## Architecture & Components
 
-Detailed technical requirements and architectural goals for the PMC and HWMON subsystems.
+The project is structured for modularity and enterprise-grade research:
 
-### 2. Proof of Concept Implementation (`docs/README.poc.md`)
+### 1. Technical Documentation (`docs/`)
 
-Step-by-step guide for deploying and verifying the PMC and HWMON components.
+- **`SPECIFICATION.md`**: Architectural goals for the PMC (Performance Monitoring Counters) and HWMON (Hardware Monitoring) subsystems.
+- **`README.poc.md`**: Step-by-step deployment and verification guide for the demonstration components.
 
-### 3. Environment Orchestration (`scripts/qemu_setup.py`)
+### 2. Orchestration Suite (`scripts/`)
 
-### 2. Kernel Debugging Toolkit (.gdbinit)
+- **`qemu_setup.py`**: Main lab orchestrator for launching the FreeBSD environment.
+- **`automate_boot.py`**: Robust automation script for initial system provisioning and serial console configuration.
+- **`fast_download.py`**: Visual downloader (`tqdm` integrated) for fetching the 14.3-RELEASE VM image.
+- **`utils.py` / `config.py`**: Centralized utility logic and project-wide configuration.
 
-I developed custom macros to streamline the inspection of internal states:
+### 3. Proof of Concept Implementation (`poc/`)
 
-- `curthread`: Quick identification of the active thread and priority.
-- `list_procs`: Scanning of the `allproc` list for memory mapping and PIDs.
-- `show_pcb`: Direct inspection of the hardware context.
+- **`pmc_demo.c`**: High-performance userspace utility for hardware event sampling.
+- **`hwmon_skeleton.c`**: Reference kernel driver utilizing the FreeBSD `newbus` architecture.
+- **`Makefile`**: Standardized BSD build infrastructure for POC components.
 
-### 3. Diagnostic Kernel Configuration (`DEBUG15`)
-
-A custom `KERNCONF` based on FreeBSD 15 `GENERIC`, optimized with:
-
-- **`WITNESS`**: Essential for detecting lock order reversals in complex drivers.
-- **`INVARIANTS`**: Activation of sanity assertions at runtime.
-- **`KTR`**: Ring buffer for tracing asynchronous events.
+---
 
 ## Engineering Workflow
 
-1. **Kernel Build:**
+### 1. Environment Setup
 
-   ```bash
-   cp DEBUG15 /usr/src/sys/amd64/conf/
-   make buildkernel KERNCONF=DEBUG15
-   make installkernel KERNCONF=DEBUG15
-   ```
+Initialize the Python virtual environment and verify system dependencies:
 
-2. **Image Preparation:**
-   The lab requires a FreeBSD disk image (default: `workloads/freebsd_debug.qcow2`).
-   Use the fast download script to get the 15.0-STABLE version automatically:
+```bash
+python3 setup_env.py
+source .venv/bin/activate
+```
 
-   ```bash
-   python3 scripts/fast_download.py
-   ```
+### 2. Image Preparation
 
-3. **Lab Launch:**
+Download and extract the FreeBSD 14.3-RELEASE production image:
 
-   ```bash
-   python3 scripts/qemu_setup.py
-   ```
+```bash
+python3 scripts/fast_download.py
+```
 
-   _Note: The script now runs in text mode (headless). To exit QEMU, press `Ctrl+A` and then `x`._
+### 3. Lab Orchestration
 
-   **IMPORTANT:** The system will start **PAUSED**. To continue the boot:
-   1. Open another terminal in the same folder.
-   2. Run: `gdb -ex "target remote :1234" -ex "continue"`
-   3. The boot process will proceed in the original terminal where the script was run.
+Launch the engineering lab:
 
-4. **Debugging:**
-   On host: `gdb kernel.debug -x .gdbinit`
+```bash
+python3 scripts/qemu_setup.py
+```
+
+_Note: The system starts **PAUSED** to allow debugger attachment. To resume boot, open another terminal and run:_
+
+```bash
+# Using the GDB batch unpause command
+gdb -batch -ex "target remote :1234" -ex "continue" -ex "detach"
+```
+
+### 4. Diagnostic Toolkit
+
+The `findings/` directory contains diagnostic artifacts, including `gdb` macros and kernel configuration templates for advanced research.

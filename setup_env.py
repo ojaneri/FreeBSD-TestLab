@@ -37,6 +37,23 @@ import sys
 import subprocess
 import venv
 
+def check_dependencies():
+    """
+    Verifies that required system utilities are installed.
+    """
+    required_tools = ["qemu-system-x86_64", "xz", "ssh", "gh"]
+    print("[*] Verifying system dependencies...")
+    missing = []
+    for tool in required_tools:
+        if shutil.which(tool) is None:
+            missing.append(tool)
+    
+    if missing:
+        print(f"[!] Warning: Missing system tools: {', '.join(missing)}")
+        print("[!] Please install them using your system package manager.")
+    else:
+        print("[+] All core system dependencies found.")
+
 def main():
     """
     Sets up a Python virtual environment and installs project dependencies.
@@ -46,6 +63,9 @@ def main():
     requirements_file = os.path.join(project_root, "requirements.txt")
 
     print(f"[INFO] Initializing environment setup in: {project_root}")
+
+    # 0. Check System Dependencies
+    check_dependencies()
 
     # 1. Create Virtual Environment
     if not os.path.exists(venv_dir):
@@ -80,4 +100,5 @@ def main():
         print(f"    source {venv_dir}/bin/activate")
 
 if __name__ == "__main__":
+    import shutil
     main()

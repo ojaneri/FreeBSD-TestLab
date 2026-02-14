@@ -30,6 +30,7 @@
 
 """
 Common utility functions for the FreeBSD lab scripts.
+
 Includes image validation, process management, and shell command execution helpers.
 """
 
@@ -38,6 +39,33 @@ import sys
 import subprocess
 import time
 import config
+
+def get_qemu_base_command(amd_mode=False):
+    """
+    Constructs the base QEMU command based on the provided configuration.
+
+    Args:
+        amd_mode (bool): If True, use AMD-specific configurations.
+
+    Returns:
+        list: A list containing the command and its arguments.
+    """
+    memory = config.AMD_MEMORY if amd_mode else config.DEFAULT_MEMORY
+    cores = config.AMD_CPU_CORES if amd_mode else config.DEFAULT_CPU_CORES
+    ssh_port = config.AMD_SSH_PORT if amd_mode else config.DEFAULT_SSH_PORT
+    cpu_model = config.AMD_CPU_MODEL if amd_mode else "host"
+
+    return [
+        "qemu-system-x86_64",
+        "-m", memory,
+        "-smp", cores,
+        "-cpu", cpu_model,
+        "-enable-kvm",
+        "-hda", config.IMAGE_PATH,
+        "-netdev", f"user,id=net0,hostfwd=tcp::{ssh_port}-:22",
+        "-device", "e1000,netdev=net0",
+        "-nographic"
+    ]
 
 def check_image_exists():
     """

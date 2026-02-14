@@ -28,21 +28,18 @@
 # Last Modified: 2026-02-14
 #
 
-# Userspace Demo
+# Userspace Utilities
 PROG=   pmc_demo
 SRCS=   pmc_demo.c
 LDADD=  -lpmc
 
-# Kernel Module
+# Kernel Modules
 KMOD=   hwmon_skeleton
-KSRCS=  hwmon_skeleton.c
+SRCS+=  hwmon_skeleton.c
 
-all: pmc_demo
-
-pmc_demo: pmc_demo.c
-	cc -O2 -o pmc_demo pmc_demo.c -lpmc
-
-clean:
-	rm -f pmc_demo *.o
-
+.include <bsd.prog.mk>
 .include <bsd.kmod.mk>
+
+# Custom Clean (complementary to bsd.*.mk)
+clean-all:
+	rm -f pmc_demo *.o .depend.* hwmon_skeleton.ko
