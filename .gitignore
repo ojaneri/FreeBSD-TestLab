@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+.env
+
+# FreeBSD Lab Artifacts
+workloads/
+img/
+*.qcow2
+*.xz
+
+# System
+.DS_Store
