@@ -35,6 +35,7 @@
 import os
 import sys
 import subprocess
+import shutil
 import venv
 
 def check_dependencies():
@@ -100,5 +101,4 @@ def main():
         print(f"    source {venv_dir}/bin/activate")
 
 if __name__ == "__main__":
-    import shutil
     main()

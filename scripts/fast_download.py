@@ -31,7 +31,6 @@
 import os
 import sys
 import urllib.request
-import shutil
 import subprocess
 from tqdm import tqdm
 import config
@@ -75,8 +74,12 @@ def extract_file(archive, output):
     """
     print(f"[+] Extracting {archive} to {output}...")
     try:
-        # Construct path to 'xz' if needed, but assuming it's in PATH
-        subprocess.run(f"xz -d -c {archive} > {output}", shell=True, check=True)
+        with open(output, 'wb') as out_file:
+            subprocess.run(
+                ['xz', '-d', '-c', archive],
+                stdout=out_file,
+                check=True
+            )
         print("[+] Extraction complete.")
     except subprocess.CalledProcessError as e:
         print(f"[-] Error extracting: {e}")
