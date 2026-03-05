@@ -13,3 +13,7 @@ img/
 
 # System
 .DS_Store
+
+# Local Development
+.clinerules
+memory-bank/
