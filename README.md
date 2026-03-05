@@ -25,10 +25,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Author: Mauro Risonho de Paula Assumpção
 Date Created: 2026-02-13
-Last Modified: 2026-02-13
--->
+Last Modified: 2026-03-05
+
+---
 
 # FreeBSD Engineering Lab & Research (Enterprise Edition)
+
+**Credits:** Developed by Osvaldo J. Filho
 
 This laboratory is established for kernel development, low-level debugging, and system research on **FreeBSD 14.3-RELEASE x64**.
 
